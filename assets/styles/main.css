@@ -1,0 +1,693 @@
+:root {
+  color-scheme: light;
+  --bg: #f3efe7;
+  --panel: rgba(255, 252, 247, 0.95);
+  --panel-border: rgba(78, 67, 48, 0.14);
+  --text: #1d2a33;
+  --muted: #5f6f79;
+  --accent: #0f7a6c;
+  --accent-strong: #0a5f54;
+  --shadow: 0 20px 45px rgba(23, 33, 39, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(15, 122, 108, 0.16), transparent 30%),
+    linear-gradient(135deg, #f7f4ee 0%, #eee6d8 100%);
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: minmax(240px, 320px) 1fr;
+  grid-template-areas: "panel map";
+  min-height: 100dvh;
+}
+
+.control-panel {
+  grid-area: panel;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  background: var(--panel);
+  backdrop-filter: blur(12px);
+  border-right: 1px solid var(--panel-border);
+  box-shadow: var(--shadow);
+  z-index: 2;
+  max-height: 100dvh;
+  overflow-y: auto;
+}
+
+.panel-header h1 {
+  margin: 0.15rem 0 0.5rem;
+  font-size: clamp(2rem, 4vw, 2.6rem);
+  line-height: 0.95;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.panel-copy,
+.tips p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.mission-card,
+.step-card,
+.advanced-panel,
+.route-image-card,
+.raster-catalog {
+  box-shadow: 0 12px 28px rgba(16, 25, 31, 0.08);
+}
+
+.mission-card {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+  border-radius: 18px;
+  background: rgba(255, 247, 237, 0.96);
+  border: 1px solid rgba(201, 106, 19, 0.18);
+}
+
+.mission-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.mission-card-header h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.mission-card-header span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(201, 106, 19, 0.12);
+  color: #8b4a0f;
+  font-weight: 700;
+}
+
+.mission-steps {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.mission-step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.65rem;
+  align-items: center;
+  padding: 0.7rem 0.8rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.mission-step strong {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 999px;
+  background: #c96a13;
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.mission-step span,
+.mission-note {
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.mission-note {
+  margin: 0;
+  font-weight: 700;
+}
+
+.route-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.step-card {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.step-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.step-card-header h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.step-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+}
+
+.step-copy {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  font-size: 0.95rem;
+}
+
+.field span {
+  font-weight: 700;
+}
+
+.field-row,
+.action-row {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.field-row,
+.action-row {
+  flex-wrap: wrap;
+}
+
+input,
+select,
+button {
+  font: inherit;
+}
+
+.field-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid rgba(29, 42, 51, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.76);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.field-toggle input {
+  flex: 0 0 auto;
+  width: 1.2rem;
+  height: 1.2rem;
+  accent-color: var(--accent);
+}
+
+input,
+select {
+  flex: 1;
+  min-width: 0;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid rgba(29, 42, 51, 0.15);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text);
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid rgba(15, 122, 108, 0.18);
+  border-color: rgba(15, 122, 108, 0.4);
+}
+
+button {
+  border: 0;
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  transition: transform 160ms ease, opacity 160ms ease, background-color 160ms ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+.primary-button {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+}
+
+.primary-button:hover {
+  background: var(--accent-strong);
+}
+
+.primary-button--large {
+  width: 100%;
+  min-height: 3.3rem;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+}
+
+.secondary-button {
+  background: rgba(29, 42, 51, 0.08);
+  color: var(--text);
+}
+
+.secondary-button:hover {
+  background: rgba(29, 42, 51, 0.12);
+}
+
+.tips {
+  display: grid;
+  gap: 0.6rem;
+  padding: 1rem;
+  border-radius: 18px;
+  background: rgba(15, 122, 108, 0.08);
+}
+
+.status {
+  padding: 0.9rem 1rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(15, 122, 108, 0.18);
+  color: var(--text);
+  line-height: 1.45;
+  font-weight: 700;
+  box-shadow: 0 10px 24px rgba(16, 25, 31, 0.08);
+}
+
+.route-image-card {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.9rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.route-image-card img {
+  display: block;
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(29, 42, 51, 0.1);
+  background: linear-gradient(135deg, #fff6eb 0%, #f3faf7 100%);
+}
+
+.route-image-card .secondary-button {
+  display: inline-flex;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.square-catalog {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 12px 28px rgba(16, 25, 31, 0.08);
+}
+
+.square-catalog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.square-catalog-header h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.square-catalog-header span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(15, 122, 108, 0.1);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.square-catalog-copy,
+.square-catalog-empty {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.square-catalog-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.square-catalog-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(255, 242, 227, 0.96);
+  border: 1px solid rgba(201, 106, 19, 0.22);
+  color: #8b4a0f;
+  font: 700 0.88rem/1 "Trebuchet MS", "Segoe UI", sans-serif;
+}
+
+.advanced-panel {
+  display: grid;
+  gap: 0;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.82);
+  overflow: hidden;
+}
+
+.advanced-panel summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 1rem 1.1rem;
+  font-weight: 700;
+  background: rgba(29, 42, 51, 0.06);
+}
+
+.advanced-panel summary::-webkit-details-marker {
+  display: none;
+}
+
+.advanced-panel[open] summary {
+  border-bottom: 1px solid rgba(29, 42, 51, 0.08);
+}
+
+.advanced-panel-body {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.raster-catalog {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.raster-catalog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.raster-catalog-header h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.raster-catalog-header span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(89, 112, 124, 0.1);
+  color: #59707c;
+  font-weight: 700;
+}
+
+.raster-catalog-copy {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.raster-catalog-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.raster-catalog-item {
+  display: grid;
+  gap: 0.2rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.8rem 0.95rem;
+  border: 1px solid rgba(89, 112, 124, 0.14);
+  border-radius: 16px;
+  background: rgba(247, 249, 250, 0.88);
+}
+
+.raster-catalog-item.is-active {
+  border-color: rgba(15, 122, 108, 0.28);
+  background: rgba(232, 247, 243, 0.96);
+}
+
+.raster-catalog-item strong {
+  font-size: 0.95rem;
+}
+
+.raster-catalog-item span {
+  color: var(--muted);
+  line-height: 1.35;
+  font-size: 0.88rem;
+}
+
+.bounds-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem;
+}
+
+.bounds-grid input,
+#local-raster-file {
+  width: 100%;
+}
+
+.map-panel {
+  grid-area: map;
+  position: relative;
+  min-width: 0;
+  min-height: 100dvh;
+}
+
+.map-mission-hint {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 850;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  max-width: min(28rem, calc(100% - 2rem));
+  pointer-events: none;
+}
+
+.map-mission-hint span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(29, 42, 51, 0.84);
+  color: #fff;
+  font: 700 0.78rem/1 "Trebuchet MS", "Segoe UI", sans-serif;
+  letter-spacing: 0.04em;
+  box-shadow: 0 10px 24px rgba(16, 25, 31, 0.2);
+}
+
+#map {
+  width: 100%;
+  height: 100dvh;
+  cursor: crosshair;
+}
+
+.map-crosshair {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 900;
+}
+
+.map-crosshair::before,
+.map-crosshair::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: rgba(201, 106, 19, 0.92);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.85);
+}
+
+.map-crosshair::before {
+  width: 2px;
+  height: 44px;
+}
+
+.map-crosshair::after {
+  width: 44px;
+  height: 2px;
+}
+
+.map-crosshair-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(15, 122, 108, 0.95);
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.75);
+}
+
+.leaflet-routing-container {
+  max-height: 40vh;
+  overflow: auto;
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(16, 25, 31, 0.16);
+}
+
+.route-point-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.route-point-marker span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.96);
+  box-shadow: 0 8px 18px rgba(16, 25, 31, 0.24);
+  color: #fff;
+  font: 700 13px/1 "Trebuchet MS", "Segoe UI", sans-serif;
+}
+
+.route-point-marker.is-start span {
+  background: #0f7a6c;
+}
+
+.route-point-marker.is-end span {
+  background: #c96a13;
+}
+
+@media (max-width: 560px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "map"
+      "panel";
+    grid-template-rows: minmax(58dvh, 1fr) auto;
+  }
+
+  .control-panel {
+    border-right: 0;
+    border-top: 1px solid var(--panel-border);
+    max-height: none;
+    overflow: visible;
+    position: relative;
+    z-index: 1;
+  }
+
+  .map-panel {
+    min-height: 58dvh;
+    position: relative;
+  }
+
+  #map {
+    height: 58dvh;
+  }
+
+  .map-mission-hint {
+    top: 0.75rem;
+    left: 0.75rem;
+    max-width: calc(100% - 1.5rem);
+  }
+
+  .map-mission-hint span {
+    font-size: 0.72rem;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 680px) {
+  .app-shell {
+    grid-template-columns: minmax(260px, 320px) 1fr;
+    grid-template-areas: "panel map";
+    grid-template-rows: 1fr;
+  }
+
+  .control-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding: 1rem 1.2rem;
+    border-right: 1px solid var(--panel-border);
+    border-bottom: 0;
+    max-height: 100dvh;
+    overflow-y: auto;
+  }
+
+  .panel-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .tips {
+    padding: 0.85rem;
+  }
+
+  #map {
+    height: 100dvh;
+  }
+}

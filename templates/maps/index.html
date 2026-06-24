@@ -1,0 +1,227 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kyiv Flight Route Map</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <link rel="stylesheet" href="{% static 'styles/main.css' %}?v={{ asset_version|escape }}" />
+  </head>
+  <body>
+    <script>
+      window.__APP_STATIC_PREFIX__ = "{{ app_static_prefix|escapejs }}";
+      window.__APP_PATHS__ = {
+        rastersManifestUrl: "{{ rasters_manifest_url|escapejs }}",
+        googleStaticRouteExportUrl: "{{ google_static_route_export_url|escapejs }}"
+      };
+    </script>
+    <div class="app-shell">
+      <main class="map-panel">
+        <div class="map-mission-hint" aria-hidden="true">
+          <span>1. START</span>
+          <span>2. END</span>
+          <span>2 CLICKS = ROUTE</span>
+        </div>
+        <div id="map" aria-label="Kyiv raster map"></div>
+      </main>
+
+      <aside class="control-panel" aria-label="Route planning controls">
+        <div class="panel-header">
+          <p class="eyebrow">Flight Route Planner</p>
+          <h1>Kyiv route map</h1>
+          <p class="panel-copy">2 map clicks build a direct flight line.</p>
+        </div>
+
+        <section class="mission-card" aria-labelledby="mission-title">
+          <div class="mission-card-header">
+            <h2 id="mission-title">Fast use</h2>
+            <span>Main</span>
+          </div>
+          <div class="mission-steps">
+            <div class="mission-step">
+              <strong>1</strong>
+              <span>Click map for start or type the start place.</span>
+            </div>
+            <div class="mission-step">
+              <strong>2</strong>
+              <span>Click map for end or type the destination.</span>
+            </div>
+            <div class="mission-step">
+              <strong>3</strong>
+              <span>Route appears automatically after the second map click.</span>
+            </div>
+          </div>
+          <p class="mission-note">Fastest workflow: 2 map clicks.</p>
+        </section>
+
+        <form class="route-form" id="route-form">
+          <input id="route-mode" name="route-mode" type="hidden" value="plane" />
+
+          <section class="step-card" aria-labelledby="start-title">
+            <div class="step-card-header">
+              <span class="step-badge">1</span>
+              <h2 id="start-title">Start</h2>
+            </div>
+            <label class="field">
+              <span>Point A</span>
+              <div class="field-row">
+                <input
+                  id="start-query"
+                  name="start-query"
+                  type="text"
+                  placeholder="Search start or click map"
+                  autocomplete="off"
+                />
+                <button type="button" class="secondary-button" data-search="start">
+                  SEARCH
+                </button>
+              </div>
+            </label>
+          </section>
+
+          <section class="step-card" aria-labelledby="end-title">
+            <div class="step-card-header">
+              <span class="step-badge">2</span>
+              <h2 id="end-title">Destination</h2>
+            </div>
+            <label class="field">
+              <span>Point B</span>
+              <div class="field-row">
+                <input
+                  id="end-query"
+                  name="end-query"
+                  type="text"
+                  placeholder="Search destination or click map"
+                  autocomplete="off"
+                />
+                <button type="button" class="secondary-button" data-search="end">
+                  SEARCH
+                </button>
+              </div>
+            </label>
+            <div class="action-row">
+              <button type="button" class="secondary-button" id="swap-points">
+                REVERSE
+              </button>
+              <button type="button" class="secondary-button" id="clear-route">
+                CLEAR
+              </button>
+            </div>
+          </section>
+
+          <section class="step-card" aria-labelledby="save-title">
+            <div class="step-card-header">
+              <span class="step-badge">3</span>
+              <h2 id="save-title">Download</h2>
+            </div>
+            <p class="step-copy">Route is split into squares immediately. This button saves the same Google squares.</p>
+            <div class="action-row">
+              <button type="button" class="primary-button primary-button--large" id="export-route-image" disabled>
+                DOWNLOAD GOOGLE SQUARES
+              </button>
+            </div>
+          </section>
+        </form>
+
+        <div class="status" id="status" role="status" aria-live="polite">
+          STEP 1: CLICK MAP FOR START.
+        </div>
+
+        <div class="route-image-card" id="route-image-card" hidden>
+          <img id="route-image-preview" alt="Generated route preview" />
+          <a id="route-image-download" class="secondary-button" download="kyiv-route.png">
+            DOWNLOAD PNG
+          </a>
+        </div>
+
+        <details class="advanced-panel">
+          <summary>Advanced layers and downloads</summary>
+          <div class="advanced-panel-body">
+            <label class="field">
+              <span>Base map</span>
+              <select id="tileset-select" name="tileset-select">
+                <option value="osm">OpenStreetMap</option>
+                <option value="hot">Humanitarian</option>
+                <option value="topo">Topo</option>
+                <option value="carto_light">Carto Light</option>
+              </select>
+            </label>
+
+            <section class="raster-catalog" aria-labelledby="raster-catalog-title">
+              <div class="raster-catalog-header">
+                <h2 id="raster-catalog-title">Visible tiles</h2>
+                <span id="raster-catalog-count">4</span>
+              </div>
+              <p class="raster-catalog-copy">
+                Download the current tile area or switch the base layer.
+              </p>
+              <div class="action-row">
+                <button type="button" class="secondary-button" id="download-raster-files">
+                  VISIBLE TILES ZIP
+                </button>
+                <button type="button" class="secondary-button" id="export-route-zip" disabled>
+                  ROUTE ZIP
+                </button>
+              </div>
+              <div class="raster-catalog-list" id="raster-catalog-list"></div>
+            </section>
+
+            <section class="raster-catalog" aria-labelledby="project-raster-title">
+              <div class="raster-catalog-header">
+                <h2 id="project-raster-title">Project rasters</h2>
+                <span id="project-raster-count">0</span>
+              </div>
+              <p class="raster-catalog-copy">
+                Overlay raster layers from the project manifest.
+              </p>
+              <div class="raster-catalog-list" id="project-raster-list">
+                <p class="square-catalog-empty">No project rasters loaded yet.</p>
+              </div>
+            </section>
+
+            <section class="raster-catalog" aria-labelledby="upload-raster-title">
+              <div class="raster-catalog-header">
+                <h2 id="upload-raster-title">Local raster</h2>
+                <span>Upload</span>
+              </div>
+              <p class="raster-catalog-copy">
+                Load GeoTIFF, PNG, or JPG as an extra overlay.
+              </p>
+              <input id="local-raster-file" type="file" accept=".tif,.tiff,.png,.jpg,.jpeg" />
+              <div class="bounds-grid">
+                <input id="raster-south" type="number" step="0.0001" placeholder="South" />
+                <input id="raster-west" type="number" step="0.0001" placeholder="West" />
+                <input id="raster-north" type="number" step="0.0001" placeholder="North" />
+                <input id="raster-east" type="number" step="0.0001" placeholder="East" />
+              </div>
+              <div class="action-row">
+                <button type="button" class="secondary-button" id="load-local-raster">
+                  ADD OVERLAY
+                </button>
+                <button type="button" class="secondary-button" id="clear-local-raster">
+                  REMOVE OVERLAY
+                </button>
+              </div>
+            </section>
+          </div>
+        </details>
+      </aside>
+    </div>
+
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="https://unpkg.com/georaster/dist/georaster.browserify.min.js"></script>
+    <script src="https://unpkg.com/georaster-layer-for-leaflet/dist/georaster-layer-for-leaflet.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script type="module" src="{% static 'js/app.js' %}?v={{ asset_version|escape }}"></script>
+  </body>
+</html>

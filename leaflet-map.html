@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kyiv Flight Route Map</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <link rel="stylesheet" href="./assets/styles/main.css?v=20260624-flight-route-map-3" />
+  </head>
+  <body>
+    <script>
+      window.__APP_STATIC_PREFIX__ = "./";
+      window.__APP_PATHS__ = {
+        rastersManifestUrl: "./data/rasters/manifest.json"
+      };
+    </script>
+    <div class="app-shell">
+      <main class="map-panel">
+        <div id="map" aria-label="Kyiv raster map"></div>
+      </main>
+
+      <aside class="control-panel" aria-label="Route planning controls">
+        <div class="panel-header">
+          <p class="eyebrow">Flight Route Planner</p>
+          <h1>Kyiv route map</h1>
+          <p class="panel-copy">
+            OpenStreetMap in Leaflet with a direct flight path overlay between your selected points.
+          </p>
+        </div>
+
+        <section class="guide-card" aria-labelledby="quick-guide-title">
+          <div class="guide-card-header">
+            <h2 id="quick-guide-title">Quick guide</h2>
+            <span>Start here</span>
+          </div>
+          <ol class="guide-list">
+            <li>Set the route with two map clicks, or type both places and the route builds automatically.</li>
+            <li>Use <strong>Swap</strong> to reverse the route, and <strong>Clear</strong> to start over.</li>
+            <li>When the line appears, use <strong>Preview PNG</strong> for an image and <strong>Export route ZIP</strong> for route data.</li>
+            <li>Use <strong>Raster tiles</strong>, <strong>Project Rasters</strong>, and <strong>Local Raster</strong> only if you need extra map layers.</li>
+          </ol>
+        </section>
+
+        <form class="route-form" id="route-form">
+          <label class="field">
+            <span>Start point</span>
+            <div class="field-row">
+              <input
+                id="start-query"
+                name="start-query"
+                type="text"
+                placeholder="e.g. Maidan Nezalezhnosti"
+                autocomplete="off"
+              />
+              <button type="button" class="secondary-button" data-search="start">
+                Search
+              </button>
+            </div>
+          </label>
+
+          <label class="field">
+            <span>Destination</span>
+            <div class="field-row">
+              <input
+                id="end-query"
+                name="end-query"
+                type="text"
+                placeholder="e.g. Kyiv Pechersk Lavra"
+                autocomplete="off"
+              />
+              <button type="button" class="secondary-button" data-search="end">
+                Search
+              </button>
+            </div>
+          </label>
+
+          <input id="route-mode" name="route-mode" type="hidden" value="plane" />
+
+          <label class="field">
+            <span>Raster tiles</span>
+            <select id="tileset-select" name="tileset-select">
+              <option value="osm">OpenStreetMap</option>
+              <option value="hot">Humanitarian</option>
+              <option value="topo">Topo</option>
+              <option value="carto_light">Carto Light</option>
+            </select>
+          </label>
+
+          <div class="tips" aria-label="Route mode summary">
+            <p><strong>Main map:</strong> OpenStreetMap is used as the base map.</p>
+            <p><strong>Route:</strong> a direct flight line is drawn between the selected points.</p>
+            <p><strong>Time:</strong> the estimated flight duration is calculated locally.</p>
+          </div>
+
+          <div class="action-row">
+            <button type="button" class="secondary-button" id="swap-points">
+              Swap
+            </button>
+            <button type="button" class="secondary-button" id="clear-route">
+              Clear
+            </button>
+          </div>
+
+          <div class="action-row">
+            <button type="button" class="secondary-button" id="export-route-image" disabled>
+              Preview PNG
+            </button>
+          </div>
+
+          <div class="action-row">
+            <button type="button" class="secondary-button" id="export-route-zip" disabled>
+              Export route ZIP
+            </button>
+          </div>
+        </form>
+
+        <div class="tips" aria-label="Usage tips">
+          <p><strong>Click the map:</strong> first point sets start, second point sets destination.</p>
+          <p><strong>Flight path:</strong> the route is always shown as a direct line between both points.</p>
+          <p><strong>Raster:</strong> switch OSM tile styles, add project rasters, or upload local overlays.</p>
+        </div>
+
+        <div class="status" id="status" role="status" aria-live="polite">
+          Ready to build a flight route around Kyiv.
+        </div>
+
+        <div class="route-image-card" id="route-image-card" hidden>
+          <img id="route-image-preview" alt="Generated route preview" />
+          <a id="route-image-download" class="secondary-button" download="kyiv-route.png">
+            Download PNG
+          </a>
+        </div>
+
+        <section class="raster-catalog" aria-labelledby="raster-catalog-title">
+          <div class="raster-catalog-header">
+            <h2 id="raster-catalog-title">Raster Catalog</h2>
+            <span id="raster-catalog-count">4</span>
+          </div>
+          <p class="raster-catalog-copy">
+            Available raster files and tile sets for the map background.
+          </p>
+          <div class="action-row">
+            <button type="button" class="secondary-button" id="download-raster-files">
+              Download visible tiles
+            </button>
+          </div>
+          <div class="raster-catalog-list" id="raster-catalog-list"></div>
+        </section>
+
+        <section class="raster-catalog" aria-labelledby="project-raster-title">
+          <div class="raster-catalog-header">
+            <h2 id="project-raster-title">Project Rasters</h2>
+            <span id="project-raster-count">0</span>
+          </div>
+          <p class="raster-catalog-copy">
+            Raster layers loaded from `data/rasters/manifest.json`.
+          </p>
+          <div class="raster-catalog-list" id="project-raster-list">
+            <p class="square-catalog-empty">No project rasters loaded yet.</p>
+          </div>
+        </section>
+
+        <section class="raster-catalog" aria-labelledby="upload-raster-title">
+          <div class="raster-catalog-header">
+            <h2 id="upload-raster-title">Local Raster</h2>
+            <span>Upload</span>
+          </div>
+          <p class="raster-catalog-copy">
+            Load a local GeoTIFF directly, or load PNG/JPG with explicit bounds.
+          </p>
+          <input id="local-raster-file" type="file" accept=".tif,.tiff,.png,.jpg,.jpeg" />
+          <div class="bounds-grid">
+            <input id="raster-south" type="number" step="0.0001" placeholder="South" />
+            <input id="raster-west" type="number" step="0.0001" placeholder="West" />
+            <input id="raster-north" type="number" step="0.0001" placeholder="North" />
+            <input id="raster-east" type="number" step="0.0001" placeholder="East" />
+          </div>
+          <div class="action-row">
+            <button type="button" class="secondary-button" id="load-local-raster">
+              Add raster overlay
+            </button>
+            <button type="button" class="secondary-button" id="clear-local-raster">
+              Remove raster overlay
+            </button>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="https://unpkg.com/georaster/dist/georaster.browserify.min.js"></script>
+    <script src="https://unpkg.com/georaster-layer-for-leaflet/dist/georaster-layer-for-leaflet.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script type="module" src="./src/js/app.js?v=20260624-flight-route-map-3"></script>
+  </body>
+</html>
